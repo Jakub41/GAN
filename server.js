@@ -1,13 +1,13 @@
 import express from 'express';
+import loaders from './src/loaders/index.js';
 
-const initServer = async ({ server, port, log }) => {
+// Starting the server from loaders
+export async function startServer({ server, port, log }) {
   const app = express();
-  app.get('/', (req, res) => {
-    res.send('🔥🔥🔥🔥The API is up and running!🔥🔥🔥🔥');
-  });
-  app.listen(port, () => {
-    log.info(`🚀🚀🚀 App running on %s`, server);
-  });
-};
-
-export default initServer;
+  try {
+    // Await the loaders init the API
+    await loaders({ expressApp: app, server, port, log });
+  } catch (err) {
+    log.error(err);
+  }
+}

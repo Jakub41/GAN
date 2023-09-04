@@ -1,8 +1,8 @@
 import { ok, strictEqual } from 'assert';
 import fs from 'fs-extra';
 import fetch from 'node-fetch';
-import pino from './logger';
-import createServer from './server';
+import logger from './src/loaders/logger.js';
+import { startServer } from './server.js';
 
 const protocol = 'http';
 const host = '127.0.0.1';
@@ -10,10 +10,11 @@ const port = '8080';
 const server = `${protocol}://${host}:${port}`;
 
 const { exists, remove, createWriteStream, readFile } = fs;
-const log = pino();
+const log = logger();
 
 (async () => {
-  await createServer({ server, port, log });
+  // init the server
+  await startServer({ server, port, log });
 
   // get a city by tag ("excepteurus")
   let result = await fetch(`${server}/cities-by-tag?tag=excepteurus&isActive=true`);
