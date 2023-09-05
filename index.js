@@ -17,11 +17,11 @@ const log = logger();
   await startServer({ server, port, log });
 
   // get a city by tag ("excepteurus")
-  let result = await fetch(`${server}/cities-by-tag?tag=excepteurus&isActive=true`);
+  let result = await fetch(`${server}/api/cities-by-tag?tag=excepteurus&isActive=true`);
 
   // oh, authentication is required
   strictEqual(result.status, 401);
-  result = await fetch(`${server}/cities-by-tag?tag=excepteurus&isActive=true`, {
+  result = await fetch(`${server}/api/cities-by-tag?tag=excepteurus&isActive=true`, {
     headers: { Authorization: 'bearer dGhlc2VjcmV0dG9rZW4=' }
   });
 

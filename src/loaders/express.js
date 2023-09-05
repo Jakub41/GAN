@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import routes from '../routes/index.js';
+import authorization from '../middlewares/authorization.js';
 
 export default async ({ app, server, port, log }) => {
   // Health Check endpoint
@@ -18,7 +20,7 @@ export default async ({ app, server, port, log }) => {
   app.use(express.json());
 
   // Load API routes
-  // app.use('/api/', routes());
+  app.use('/api/', authorization, routes());
 
   // catch 404 and forward to error handler
   app.use((req, res, next) => {
