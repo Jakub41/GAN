@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import _ from 'lodash';
-import { successResponseHandler, unsuccessResponse } from '../helpers/helpers.js';
-import getCityByTag from '../utils/cities.js';
+import { getCityByTag } from '../services/cities.js';
+import { successResponseHandler, unsuccessResponse } from '../utils/helpers.js';
 
 const route = Router();
 

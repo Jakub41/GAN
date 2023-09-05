@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import citiesByTag from './citiesByTag.js';
 import allCities from './allCities.js';
+import citiesDistance from './citiesDistance.js';
 
 // Routing
 // Here the import/export of all routes
@@ -10,6 +11,7 @@ export default () => {
   // That initialize as a route for the API endpoint
   citiesByTag(app);
   allCities(app);
+  citiesDistance(app);
 
   return app;
 };

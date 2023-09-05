@@ -1,8 +1,8 @@
 import fs from 'fs-extra';
+import _ from 'lodash';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import logger from '../loaders/logger.js';
-import _ from 'lodash';
 
 const log = logger();
 
@@ -16,13 +16,30 @@ const getCityData = async () => {
   return JSON.parse(file);
 };
 
-const filterCities = async ({ tag, isActive }) => {
+const filterCities = async ({ tag, isActive, guid }) => {
   const cityData = await getCityData();
   if (_.isEmpty(cityData)) return [];
 
-  return tag && isActive
-    ? cityData.filter((city) => city.tags.includes(tag) && city.isActive === !!isActive)
-    : [];
+  let filteredCities = cityData;
+
+  if (tag && isActive) {
+    filteredCities =
+      filteredCities.filter((city) => city.tags.includes(tag) && city.isActive === !!isActive) ||
+      [];
+  }
+
+  if (guid) {
+    filteredCities = filteredCities.filter((city) => city.guid === guid) || [];
+  }
+
+  return filteredCities;
+};
+
+const findCitiesCoordinates = async ({ guid }) => {
+  const [{ latitude, longitude }] = await filterCities({ guid });
+  if (!latitude || !longitude) return null;
+
+  return { lat: latitude, lon: longitude };
 };
 
 const successResponseHandler = (res, body, statusCode) => {
@@ -37,4 +54,14 @@ const unsuccessResponse = (res, ex, statusCode) => {
   res.status(statusCode).send(body);
 };
 
-export { getCityData, filterCities, successResponseHandler, unsuccessResponse };
+const isValidCoordinates = (city) =>
+  city && typeof city.lat === 'number' && typeof city.lon === 'number';
+
+export {
+  filterCities,
+  findCitiesCoordinates,
+  getCityData,
+  isValidCoordinates,
+  successResponseHandler,
+  unsuccessResponse
+};
