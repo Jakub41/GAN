@@ -4,7 +4,7 @@ import cors from 'cors';
 export default async ({ app, server, port, log }) => {
   // Health Check endpoint
   app.get('/', (req, res) => {
-    res.status(200).json('🔥🔥 Server is running 🔥🔥').end();
+    res.status(200).send('🔥🔥 Server is running 🔥🔥').end();
   });
 
   app.head('/', (req, res) => {

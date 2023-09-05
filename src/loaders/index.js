@@ -7,7 +7,6 @@ export default async ({ expressApp, server, port, log }) => {
     await expressLoader({ app: expressApp, server, port, log });
     log.info('✅✅✅ API loaded ');
   } catch (error) {
-    log.error(error);
+    log.error('⛔️⛔️⛔️ Express was not loaded %o', error);
   }
-  // throw new Error('This is an intentional error for testing purposes.');
 };

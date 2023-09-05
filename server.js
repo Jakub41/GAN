@@ -8,6 +8,6 @@ export async function startServer({ server, port, log }) {
     // Await the loaders init the API
     await loaders({ expressApp: app, server, port, log });
   } catch (err) {
-    log.error(err);
+    log.error('⛔️⛔️⛔️ The server failed t start %o', err);
   }
 }

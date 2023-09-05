@@ -6,7 +6,9 @@
   "type": "module",
   "node": "~20",
   "scripts": {
-    "start": "nodemon --experimental-vm-modules index.js | npx pino-pretty"
+    "start": "nodemon --experimental-vm-modules index.js | npx pino-pretty",
+    "test": "nodemon --test test/",
+    "test:watch": "nodemon --watch --test test/"
   },
   "husky": {
     "hooks": {
