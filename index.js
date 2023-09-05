@@ -40,7 +40,7 @@ const log = logger();
 
   // find the distance between two cities
   result = await fetch(
-    `${server}/distance?from=${city.guid}&to=17f4ceee-8270-4119-87c0-9c1ef946695e`,
+    `${server}/api/distance?from=${city.guid}&to=17f4ceee-8270-4119-87c0-9c1ef946695e`,
     {
       headers: { Authorization: 'bearer dGhlc2VjcmV0dG9rZW4=' }
     }
@@ -59,7 +59,7 @@ const log = logger();
   // now it get's a bit more tricky. We want to find all cities within 250 km of the
   // the one we found earlier. That might take a while, so rather than waiting for the
   // result we expect to get a url that can be polled for the final result
-  result = await fetch(`${server}/area?from=${city.guid}&distance=250`, {
+  result = await fetch(`${server}/api/area?from=${city.guid}&distance=250`, {
     headers: { Authorization: 'bearer dGhlc2VjcmV0dG9rZW4=' },
     timeout: 25
   });
@@ -68,7 +68,7 @@ const log = logger();
   strictEqual(result.status, 202);
   body = await result.json();
 
-  strictEqual(body.resultsUrl, `${server}/area-result/2152f96f-50c7-4d76-9e18-f7033bd14428`);
+  strictEqual(body.resultsUrl, `${server}/api/area-result/2152f96f-50c7-4d76-9e18-f7033bd14428`);
 
   let status;
   do {
@@ -99,7 +99,7 @@ const log = logger();
   // okay, nice we got this far. we are almost there. but let's have an endpoint
   // for downloading all cites.
   // that's quite a bit of data, so make sure to support streaming
-  result = await fetch(`${server}/all-cities`, {
+  result = await fetch(`${server}/api/all-cities`, {
     headers: { Authorization: 'bearer dGhlc2VjcmV0dG9rZW4=' }
   });
 

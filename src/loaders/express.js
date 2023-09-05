@@ -19,7 +19,7 @@ export default async ({ app, server, port, log }) => {
   // Middleware that transforms the raw string of req.body into json
   app.use(express.json());
 
-  // Load API routes
+  // Load API routes with authorization middleware
   app.use('/api/', authorization, routes());
 
   // catch 404 and forward to error handler
