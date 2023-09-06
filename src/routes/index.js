@@ -1,7 +1,9 @@
 import { Router } from 'express';
-import citiesByTag from './citiesByTag.js';
 import allCities from './allCities.js';
+import citiesByTag from './citiesByTag.js';
 import citiesDistance from './citiesDistance.js';
+import citiesWithinArea from './citiesWithinArea.js';
+import cityByGuid from './cityByGuid.js';
 
 // Routing
 // Here the import/export of all routes
@@ -12,6 +14,8 @@ export default () => {
   citiesByTag(app);
   allCities(app);
   citiesDistance(app);
+  citiesWithinArea(app);
+  cityByGuid(app);
 
   return app;
 };

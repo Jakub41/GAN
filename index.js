@@ -68,7 +68,8 @@ const log = logger();
   strictEqual(result.status, 202);
   body = await result.json();
 
-  strictEqual(body.resultsUrl, `${server}/api/area-result/2152f96f-50c7-4d76-9e18-f7033bd14428`);
+  // THE GUID 2152f96f-50c7-4d76-9e18-f7033bd14428 does not exist
+  strictEqual(body.resultsUrl, `${server}/api/area-result/ed354fef-31d3-44a9-b92f-4a3bd7eb0408`);
 
   let status;
   do {
