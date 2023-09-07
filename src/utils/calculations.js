@@ -9,8 +9,7 @@ const cache = new NodeCache({ stdTTL: 3600 });
 const EARTH_RADIUS = 6371; // Earth's radius in kilometers
 
 const distanceBetweenCitiesByHaversineFormula = ({ fromCity, toCity }) => {
-  log.info('🔢🔢🔢 Distance calculation in process');
-  const startTime = performance.now();
+  // log.info('🔢🔢🔢 Distance calculation in process');
   const { lat: lat1, lon: lon1 } = fromCity;
   const { lat: lat2, lon: lon2 } = toCity;
 
@@ -36,11 +35,7 @@ const distanceBetweenCitiesByHaversineFormula = ({ fromCity, toCity }) => {
     log.warn('The calculation failed');
     return 0;
   }
-  const endTime = performance.now(); // Stop timing
-  const calculationTime = endTime - startTime;
-
-  console.log('Calculation took ms', calculationTime.toFixed(2));
-  log.info('📏📏📏 The distance between cities in KM is %s', parseFloat(distance.toFixed(2)));
+  // log.info('📏📏📏 The distance between cities in KM is %s', parseFloat(distance.toFixed(2)));
   return parseFloat(distance.toFixed(2));
 };
 
@@ -55,7 +50,7 @@ const getCityCoordinates = async ({ guid }) => {
   const cityCoordinates = await findCitiesCoordinates({ guid });
 
   if (isValidCoordinates(cityCoordinates)) {
-    log.info('📍📍📍 City Coordinates are valid');
+    // log.info('📍📍📍 City Coordinates are valid');
     cache.set(guid, cityCoordinates);
     return cityCoordinates;
   }
@@ -69,9 +64,10 @@ const getDistance = async ({ from, to }) => {
     getCityCoordinates({ guid: from }),
     getCityCoordinates({ guid: to })
   ]);
+  console.log('fromCity: ', fromCity);
 
   if (fromCity && toCity) {
-    log.info('📍📍📍 Coordinates found');
+    // log.info('📍📍📍 Coordinates found');
     return distanceBetweenCitiesByHaversineFormula({ fromCity, toCity });
   }
 
@@ -80,7 +76,7 @@ const getDistance = async ({ from, to }) => {
 
 const zones = [
   {
-    name: 'Africa',
+    name: 'Zone1',
     minLat: -35.0,
     maxLat: 37.0,
     minLon: -27.0,
@@ -88,7 +84,7 @@ const zones = [
     cities: []
   },
   {
-    name: 'Asia',
+    name: 'Zone2',
     minLat: -10.0,
     maxLat: 60.0,
     minLon: 30.0,
@@ -96,7 +92,7 @@ const zones = [
     cities: []
   },
   {
-    name: 'Europe',
+    name: 'Zone3',
     minLat: 36.0,
     maxLat: 71.0,
     minLon: -31.0,
@@ -104,7 +100,7 @@ const zones = [
     cities: []
   },
   {
-    name: 'North America',
+    name: 'Zone4',
     minLat: 7.0,
     maxLat: 84.0,
     minLon: -170.0,
@@ -112,7 +108,7 @@ const zones = [
     cities: []
   },
   {
-    name: 'South America',
+    name: 'Zone5',
     minLat: -56.0,
     maxLat: 12.0,
     minLon: -81.0,
@@ -120,7 +116,7 @@ const zones = [
     cities: []
   },
   {
-    name: 'Central America',
+    name: 'Zone6',
     minLat: 6.0,
     maxLat: 17.0,
     minLon: -93.0,
@@ -128,7 +124,7 @@ const zones = [
     cities: []
   },
   {
-    name: 'Oceania',
+    name: 'Zone7',
     minLat: -50.0,
     maxLat: 0.0,
     minLon: 110.0,
@@ -136,7 +132,7 @@ const zones = [
     cities: []
   },
   {
-    name: 'North Pole',
+    name: 'Zone8',
     minLat: 66.5,
     maxLat: 90.0,
     minLon: -180.0,
@@ -144,7 +140,7 @@ const zones = [
     cities: []
   },
   {
-    name: 'South Pole',
+    name: 'Zone9',
     minLat: -90.0,
     maxLat: -66.5,
     minLon: -180.0,
@@ -165,9 +161,7 @@ const nearestCitiesStream = ({ from, cities, range }) => {
         reject(err);
       } else {
         // The processing is complete
-        log.info('Processing completed', {
-          totalBatches: distanceCalculator.totalBatches
-        });
+        log.info('Processing completed');
         resolve(nearCities);
       }
     });
