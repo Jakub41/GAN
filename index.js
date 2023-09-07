@@ -69,19 +69,21 @@ const log = logger();
   body = await result.json();
 
   // THE GUID 2152f96f-50c7-4d76-9e18-f7033bd14428 does not exist
-  strictEqual(body.resultsUrl, `${server}/api/area-result/ed354fef-31d3-44a9-b92f-4a3bd7eb0408`);
+  strictEqual(body.resultsUrl, `${server}/api/area-result/2152f96f-50c7-4d76-9e18-f7033bd14428`);
 
   let status;
   do {
     result = await fetch(body.resultsUrl, {
       headers: { Authorization: 'bearer dGhlc2VjcmV0dG9rZW4=' }
     });
+
     status = result.status;
     // return 202 while the result is not yet ready, otherwise 200
     ok(status === 200 || status === 202, 'Unexpected status code');
 
     // let's wait a bit if the result is not ready yet
     if (status === 202) {
+      console.log('STATUS 202');
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
   } while (status !== 200);

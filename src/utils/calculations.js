@@ -1,9 +1,13 @@
+import NodeCache from 'node-cache';
 import { findCitiesCoordinates, isValidCoordinates } from './helpers.js';
+import { pipeline } from 'stream';
 import logger from '../loaders/logger.js';
+import { CitiesWorker, DistanceCalculatorWorker } from '../workers/citiesWorker.js';
 
 const log = logger();
 
 const distanceBetweenCitiesByHaversineFormula = ({ fromCity, toCity }) => {
+  log.info('🔢🔢🔢 Distance calculation in process');
   const { lat: lat1, lon: lon1 } = fromCity;
   const { lat: lat2, lon: lon2 } = toCity;
 
@@ -32,8 +36,8 @@ const distanceBetweenCitiesByHaversineFormula = ({ fromCity, toCity }) => {
     log.warn('The calculation failed');
     return 0;
   }
-  log.info('📏📏📏 The distance between cities in KM is %s', distance);
-  return distance.toFixed(2);
+  log.info('📏📏📏 The distance between cities in KM is %s', parseFloat(distance.toFixed(2)));
+  return parseFloat(distance.toFixed(2));
 };
 
 const getDistance = async ({ from, to }) => {
@@ -44,8 +48,34 @@ const getDistance = async ({ from, to }) => {
     log.warn('❌❌❌ City Coordinates are not valid');
     return null;
   }
-  log.info('📍📍📍 Distance found');
+  log.info('📍📍📍 Coordinates found');
   return distanceBetweenCitiesByHaversineFormula({ fromCity, toCity });
 };
 
-export { getDistance, distanceBetweenCitiesByHaversineFormula };
+const nearestCitiesStream = ({ from, cities, range }) => {
+  return new Promise((resolve, reject) => {
+    const cityStream = new CitiesWorker({ cities, from });
+    const distanceCalculator = new DistanceCalculatorWorker({ from, range });
+    const nearCities = [];
+
+    pipeline(cityStream, distanceCalculator, (err) => {
+      if (err) {
+        log.error('Error processing cities:', err);
+        reject(err);
+      } else {
+        // The processing is complete
+        log.info('Processing completed', {
+          totalBatches: distanceCalculator.totalBatches
+        });
+        resolve(nearCities);
+      }
+    });
+
+    distanceCalculator.on('data', (batch) => {
+      // Process the batch of nearCities
+      nearCities.push(...batch);
+    });
+  });
+};
+
+export { getDistance, distanceBetweenCitiesByHaversineFormula, nearestCitiesStream };
