@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import logger from '../loaders/logger.js';
-import { getCitiesDistance, getCityByGuid, getAllCities } from '../services/cities.js';
+import { getCityByGuid, getAllCities } from '../services/cities.js';
 import { filterCities, successResponseHandler, unsuccessResponse } from '../utils/helpers.js';
-import { nearestCitiesStream } from '../utils/calculations.js';
+import { getDistance, nearestCitiesStream } from '../utils/calculations.js';
 
 const log = logger();
 const route = Router();
@@ -45,7 +45,7 @@ export default (app) => {
         log.info('⚙️⚙️⚙️ Worker job completed!');
       } catch (error) {
         jobWorker[workerGuid].status = 'failed';
-        log.error('⚠️⚠️⚠️ Worker job failed:', error);
+        log.error('⚠️⚠️⚠️ Worker job failed %s:', error.message);
       }
     };
 

@@ -7,11 +7,17 @@ import logger from '../loaders/logger.js';
 const log = logger();
 
 const getCityData = async () => {
+  const startTime = performance.now();
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
   const resolvedPath = path.resolve(__dirname, '../../addresses.json');
   const file = fs.readFileSync(resolvedPath);
+
+  const endTime = performance.now(); // Stop timing
+  const loadTime = endTime - startTime;
+
+  console.log(`Loaded JSON data in ${loadTime.toFixed(2)} ms`);
 
   return JSON.parse(file);
 };
