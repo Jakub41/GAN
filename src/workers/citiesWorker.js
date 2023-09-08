@@ -11,7 +11,7 @@ class CitiesWorker extends Readable {
   constructor({ cities, from, zones }) {
     super({ objectMode: true });
     this.cities = cities.filter((city) => city.guid !== from[0].guid);
-    this.batchSize = 15000;
+    this.batchSize = 20000;
     this.zones = zones;
     this.assignCitiesToZones(cities, zones);
   }
@@ -44,7 +44,12 @@ class CitiesWorker extends Readable {
     }
 
     const zone = this.zones.shift();
-    const batch = zone.cities.splice(0, this.batchSize);
+    const numCitiesInZone = zone.cities.length;
+    console.log('numCitiesInZone: ', numCitiesInZone);
+    const dynamicBatchSize = Math.min(this.batchSize, numCitiesInZone);
+    console.log('dynamicBatchSize: ', dynamicBatchSize);
+
+    const batch = zone.cities.splice(0, dynamicBatchSize);
     this.push(batch);
     log.info(`⚙️⚙️⚙️ CitiesWorker processing for ${zone.name}`);
   }
@@ -73,17 +78,20 @@ class DistanceCalculatorWorker extends Transform {
         // Use cached distance if available
         nearCities.push(cachedDistance);
       } else {
-        const distance = await getDistance({
-          from: this.from[0].guid,
-          to: city.guid
-        });
+        if (city.guid !== this.from[0].guid) {
+          const distance = await getDistance({
+            from: this.from[0].guid,
+            to: city.guid
+          });
 
-        if (distance !== null && distance <= this.range) {
-          let { guid, longitude, latitude, address, tags } = city;
-          nearCities.push({ guid, longitude, latitude, address, tags, distance });
+          if (distance !== null && distance <= this.range) {
+            let { guid, longitude, latitude, address, tags } = city;
+            console.log('PUSHING', distance);
+            nearCities.push({ guid, longitude, latitude, address, tags, distance });
 
-          // Cache the distance for future use
-          cache.set(cacheKey, distance);
+            // Cache the distance for future use
+            cache.set(cacheKey, distance);
+          }
         }
       }
     }
@@ -91,15 +99,9 @@ class DistanceCalculatorWorker extends Transform {
     const endTime = performance.now(); // Stop timing
     const bachingTime = endTime - startTime;
 
-    setTimeout(() => {
-      console.log('BachingTime took ms', bachingTime.toFixed(2));
-    }, 30000);
-
+    console.log('BachingTime took ms', bachingTime.toFixed(2));
+    console.log('NEAREST CITIES', nearCities);
     this.push(nearCities);
-    callback();
-  }
-  _flush(callback) {
-    this.totalBatches = this.batchIndex;
     callback();
   }
 }

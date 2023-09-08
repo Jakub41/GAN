@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import logger from '../loaders/logger.js';
-import { getCityByGuid, getAllCities } from '../services/cities.js';
+import { getCityByGuid, getAllCities, getCitiesWithinArea } from '../services/cities.js';
 import { filterCities, successResponseHandler, unsuccessResponse } from '../utils/helpers.js';
 import { getDistance, nearestCitiesStream } from '../utils/calculations.js';
 
@@ -17,31 +17,47 @@ export default (app) => {
     const { from, distance } = req.query;
 
     const resultsUrl = `${req.protocol}://${req.get('host')}/api/area-result/${workerGuid}`;
-    res.status(202).json({ resultsUrl });
-
-    if (jobWorker[workerGuid]) {
-      log.info('⚙️⚙️⚙️ Worker job already exists!');
-      return;
-    }
-
-    const fromCity = await getCityByGuid({ guid: from });
-    const allCities = await getAllCities();
-
     jobWorker[workerGuid] = {
       status: 'pending',
       data: null
     };
 
+    res.status(202).json({ resultsUrl });
+
+    const fromCity = await getCityByGuid({ guid: from });
+    const allCities = await getAllCities();
+
+    jobWorker[workerGuid].status = 'processing';
+
     const calculateCitiesWithinRange = async () => {
       try {
-        const citiesWithinRange = await nearestCitiesStream({
+        // Simulate a delay before completing the job
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        /**
+         * This part of the code uses a stream and batch approach
+         * is much slower then the other approach
+         * but simulates more real situation like a worker doing it job
+         *  */
+        // const citiesWithinRange = await nearestCitiesStream({
+        //   originPoint: fromCity,
+        //   cities: allCities,
+        //   radius: parseFloat(distance)
+        // });
+
+        /**
+         * This part of the code uses a faster approach to calculate the nearest cities
+         * from the origin city but for the sake of the testing script
+         * a timeout is added to simulate a worker job process
+         */
+        const citiesWithinRange = await getCitiesWithinArea({
           from: fromCity,
           cities: allCities,
-          range: parseFloat(distance)
+          radius: parseFloat(distance)
         });
 
         jobWorker[workerGuid].status = 'completed';
-        jobWorker[workerGuid].data = citiesWithinRange;
+        jobWorker[workerGuid].data = { cities: citiesWithinRange };
         log.info('⚙️⚙️⚙️ Worker job completed!');
       } catch (error) {
         jobWorker[workerGuid].status = 'failed';
@@ -49,7 +65,7 @@ export default (app) => {
       }
     };
 
-    setTimeout(calculateCitiesWithinRange, 25);
+    setTimeout(calculateCitiesWithinRange);
   });
 
   route.get('/area-result/:guid', async (req, res) => {

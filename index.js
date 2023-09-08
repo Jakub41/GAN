@@ -78,12 +78,12 @@ const log = logger();
     });
 
     status = result.status;
+
     // return 202 while the result is not yet ready, otherwise 200
     ok(status === 200 || status === 202, 'Unexpected status code');
 
     // let's wait a bit if the result is not ready yet
     if (status === 202) {
-      console.log('STATUS 202');
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
   } while (status !== 200);

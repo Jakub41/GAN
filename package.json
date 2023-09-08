@@ -23,6 +23,11 @@
       "prettier --write --ignore-unknown"
     ]
   },
+  "nodemonConfig": {
+    "ignore": [
+      "*.json"
+    ]
+  },
   "author": "GAN Integrity",
   "license": "ISC",
   "dependencies": {

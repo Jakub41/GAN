@@ -25,8 +25,8 @@ export default (app) => {
     ]);
 
     const response = {
-      from: cityFrom[0],
-      to: cityTo[0],
+      from: cityFrom,
+      to: cityTo,
       unit: 'km',
       distance: Number(distance)
     };
