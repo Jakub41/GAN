@@ -1,4 +1,4 @@
-const EARTH_RADIUS_KM = 6371;
+import { EARTH_RADIUS_KM, deg2rad, haversine, rad2deg } from './geoSpatialTools.js';
 
 export const geoSpatialCalculations = ({ originLocation, radius }) => {
   const deltaLatitude = radius / EARTH_RADIUS_KM;
@@ -15,9 +15,3 @@ export const geoSpatialCalculations = ({ originLocation, radius }) => {
     deltaLongitude: rad2deg(deltaLongitude)
   };
 };
-
-const haversine = (theta) => Math.sin(theta / 2) ** 2;
-
-const deg2rad = (deg) => deg * (Math.PI / 180);
-
-const rad2deg = (rad) => rad * (180 / Math.PI);

@@ -6,3 +6,4 @@ coverage
 **/.DS_Store
 .zip
 yarn.lock
+all-cities.json
